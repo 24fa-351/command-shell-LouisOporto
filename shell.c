@@ -135,7 +135,6 @@ void execute_command(char **args) {
                 exit(1);
             }
         }
-        printf("Call once\n");
         execvp(args[0], args);
         perror("Failed to call exec");
         exit(1);
