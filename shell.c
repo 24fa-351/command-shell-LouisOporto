@@ -10,9 +10,9 @@ void read_input(char *input) {
 }
 
 void parse_input(char *input, char **args) {
-    for (int i = 0; i < MAX_ARGS; i++) {
-        args[i] = strsep(&input, " "); // Split input by space
-        if (args[i] == NULL) {
+    for (int ix = 0; ix < MAX_ARGS; ix++) {
+        args[ix] = strsep(&input, " "); // Split input by space
+        if (args[ix] == NULL) {
             break; // No more arguments
         }
     }
@@ -22,26 +22,26 @@ void change_directory(char *path) {
     if (path == NULL) {
         fprintf(stderr, "cd: missing argument\n");
     } else if (chdir(path) != 0) {
-        perror("cd");
+        perror("Failed to cd to path");
     }
 }
 
 void set_env_variable(char *var, char *value) {
     if (setenv(var, value, 1) != 0) {
-        perror("set");
+        perror("Failed to set variable");
     }
 }
 
 void unset_env_variable(char *var) {
     if (unsetenv(var) != 0) {
-        perror("unset");
+        perror("Failed to unset variable");
     }
 }
 
 void handle_echo(char **args) {
-    for (int i = 1; args[i] != NULL; i++) {
-        if (args[i][0] == '$') {
-            char *env_var = getenv(args[i] + 1); // Skip the '$' character
+    for (int ix = 1; args[ix] != NULL; ix++) {
+        if (args[ix][0] == '$') {
+            char *env_var = getenv(args[ix] + 1); // Skip the '$' character
             if (env_var != NULL) {
                 printf("%s ", env_var);
             }
@@ -50,7 +50,7 @@ void handle_echo(char **args) {
             }
         }
         else {
-            printf("%s ", args[i]);
+            printf("%s ", args[ix]);
         }
     }
     printf("\n");
@@ -73,32 +73,32 @@ void execute_command(char **args) {
     char *cmd1[MAX_ARGS];
     char *cmd2[MAX_ARGS];
 
-    for (int i = 0; args[i] != NULL; i++) {
-        if (strcmp(args[i], "&") == 0) {
+    for (int ix = 0; args[ix] != NULL; ix++) {
+        if (strcmp(args[ix], "&") == 0) {
             background = 1;
-            args[i] = NULL;
+            args[ix] = NULL;
         } 
-        else if (strcmp(args[i], ">") == 0) {
-            args[i] = NULL;
-            output_file = args[i + 1];
+        else if (strcmp(args[ix], ">") == 0) {
+            args[ix] = NULL;
+            output_file = args[ix + 1];
             output_redirect = open(output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
         } 
-        else if (strcmp(args[i], "<") == 0) {
-            args[i] = NULL;
-            input_file = args[i + 1];
+        else if (strcmp(args[ix], "<") == 0) {
+            args[ix] = NULL;
+            input_file = args[ix + 1];
             input_redirect = open(input_file, O_RDONLY);
         }
-        else if (strcmp(args[i], "|") == 0) {
+        else if (strcmp(args[ix], "|") == 0) {
             piping = 1;
-            args[i] = NULL;
-            for (int j = 0; j < i; j++) {
-                cmd1[j] = args[j];
+            args[ix] = NULL;
+            for (int jx = 0; jx < ix; jx++) {
+                cmd1[jx] = args[jx];
             }
-            cmd1[i] = NULL;
-            for (int j = i + 1; args[j] != NULL; j++) {
-                cmd2[j - i - 1] = args[j];
+            cmd1[ix] = NULL;
+            for (int jx = ix + 1; args[jx] != NULL; jx++) {
+                cmd2[jx - ix - 1] = args[jx];
             }
-            cmd2[i] = NULL;
+            cmd2[ix] = NULL;
             break;
         }
     }
