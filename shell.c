@@ -89,7 +89,6 @@ void execute_command(char **args) {
         }
         else if (strcmp(args[ix], "|") == 0) {
             piping = 1;
-            args[ix] = NULL;
             for (int jx = 0; jx < ix; jx++) {
                 cmd1[jx] = args[jx];
             }
@@ -141,7 +140,6 @@ void execute_command(char **args) {
     }
     else {
         if (!background) {
-            int status;
             wait(NULL);
         }
         else {
