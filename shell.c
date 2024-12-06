@@ -119,7 +119,7 @@ void execute_command(char **args) {
         if (piping) {
             pipe(pipe_fd);
             pid_t pid2 = fork();
-            if (pipe_fd == 0) {
+            if (pid2 == 0) {
                 close(pipe_fd[0]);
                 dup2(pipe_fd[1], STDOUT_FILENO);
                 execvp(cmd1[0], cmd1);
