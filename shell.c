@@ -22,19 +22,19 @@ void change_directory(char *path) {
     if (path == NULL) {
         fprintf(stderr, "cd: missing argument\n");
     } else if (chdir(path) != 0) {
-        perror("Failed to cd to path");
+        perror("Failed to cd to path!");
     }
 }
 
 void set_env_variable(char *var, char *value) {
     if (setenv(var, value, 1) != 0) {
-        perror("Failed to set variable");
+        perror("Failed to set variable!");
     }
 }
 
 void unset_env_variable(char *var) {
     if (unsetenv(var) != 0) {
-        perror("Failed to unset variable");
+        perror("Failed to unset variable!");
     }
 }
 
@@ -61,7 +61,6 @@ void execute_command(char **args) {
         handle_echo(args);
         return;
     }
-
 
     int background = 0;
     int input_redirect = -1;
