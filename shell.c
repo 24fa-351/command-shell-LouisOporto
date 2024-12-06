@@ -104,7 +104,7 @@ void execute_command(char **args) {
 
     pid_t pid = fork();
     if (pid < 0) {
-        perror("fork");
+        perror("Failed to fork");
         return;
     }
 
@@ -124,20 +124,21 @@ void execute_command(char **args) {
                 close(pipe_fd[0]);
                 dup2(pipe_fd[1], STDOUT_FILENO);
                 execvp(cmd1[0], cmd1);
-                perror("pipe exec");
-                exit(EXIT_FAILURE);
+                perror("Failed to pipe exec child");
+                exit(1);
             } 
             else {
                 close(pipe_fd[1]);
                 dup2(pipe_fd[0], STDIN_FILENO);
                 execvp(cmd2[0], cmd2);
-                perror("pipe exec");
-                exit(EXIT_FAILURE);
+                perror("Failed to pipe exec parent");
+                exit(1);
             }
         }
+        printf("Call once\n");
         execvp(args[0], args);
-        perror("exec");
-        exit(EXIT_FAILURE);
+        perror("Failed to call exec");
+        exit(1);
     }
     else {
         if (!background) {
