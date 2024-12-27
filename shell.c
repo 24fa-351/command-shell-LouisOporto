@@ -57,7 +57,7 @@ void handle_echo(char **args) {
 }
 
 void execute_command(char **args) {
-    if (strcmp(args[0], "echo") == 0) {
+    if (strncmp(args[0], "echo", 4) == 0) {
         handle_echo(args);
         return;
     }
