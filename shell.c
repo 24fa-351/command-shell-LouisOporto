@@ -68,9 +68,9 @@ void execute_command(char **args) {
     char *input_file = NULL;
     char *output_file = NULL;
     int pipe_fd[2];
-    int piping = 0;
-    char *cmd1[MAX_ARGS];
-    char *cmd2[MAX_ARGS];
+    int piping_is_true = 0;
+    char *cmd_1[MAX_ARGS];
+    char *cmd_2[MAX_ARGS];
 
     for (int ix = 0; args[ix] != NULL; ix++) {
         if (strcmp(args[ix], "&") == 0) {
@@ -88,15 +88,15 @@ void execute_command(char **args) {
             input_redirect = open(input_file, O_RDONLY);
         }
         else if (strcmp(args[ix], "|") == 0) {
-            piping = 1;
-            for (int jx = 0; jx < ix; jx++) {
-                cmd1[jx] = args[jx];
+            piping_is_true = 1;
+            for (int first_iter = 0; first_iter < ix; first_iter++) {
+                cmd_1[first_iter] = args[first_iter];
             }
-            cmd1[ix] = NULL;
-            for (int jx = ix + 1; args[jx] != NULL; jx++) {
-                cmd2[jx - ix - 1] = args[jx];
+            cmd_1[ix] = NULL;
+            for (int second_iter = ix + 1; args[second_iter] != NULL; second_iter++) {
+                cmd_2[second_iter - ix - 1] = args[second_iter];
             }
-            cmd2[ix] = NULL;
+            cmd_2[ix] = NULL;
             break;
         }
     }
@@ -116,20 +116,20 @@ void execute_command(char **args) {
             dup2(output_redirect, STDOUT_FILENO);
             close(output_redirect);
         }
-        if (piping) {
+        if (piping_is_true) {
             pipe(pipe_fd);
             pid_t pid2 = fork();
             if (pid2 == 0) {
                 close(pipe_fd[0]);
                 dup2(pipe_fd[1], STDOUT_FILENO);
-                execvp(cmd1[0], cmd1);
+                execvp(cmd_1[0], cmd_1);
                 perror("Failed to pipe exec child");
                 exit(1);
             } 
             else {
                 close(pipe_fd[1]);
                 dup2(pipe_fd[0], STDIN_FILENO);
-                execvp(cmd2[0], cmd2);
+                execvp(cmd_2[0], cmd_2);
                 perror("Failed to pipe exec parent");
                 exit(1);
             }
